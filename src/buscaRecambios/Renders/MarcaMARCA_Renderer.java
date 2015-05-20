@@ -5,7 +5,6 @@
  */
 package buscaRecambios.Renders;
 
-import buscaRecambios.entity.Marca;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -16,6 +15,6 @@ public class MarcaMARCA_Renderer extends DefaultTableCellRenderer{
     
     @Override
     protected void setValue(Object value) {
-        setText(((Marca) value).getMarca());
+        setText((String) value);
     }
 }

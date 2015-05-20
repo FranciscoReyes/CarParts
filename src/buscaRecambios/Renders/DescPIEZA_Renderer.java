@@ -16,6 +16,8 @@ public class DescPIEZA_Renderer extends DefaultTableCellRenderer{
     
     @Override
     protected void setValue(Object value) {
+        if(value.getClass() == Pieza.class) {
         setText(((Pieza) value).getDescrip());
+        }
     }
 }

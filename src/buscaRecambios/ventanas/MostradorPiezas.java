@@ -27,6 +27,7 @@ import buscaRecambios.TableModels.TableModelModelos;
 import buscaRecambios.TableModels.TableModelPiezas;
 import buscaRecambios.entity.Marca;
 import buscaRecambios.entity.Modelo;
+import buscaRecambios.entity.Pieza;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.JOptionPane;
@@ -47,9 +48,11 @@ public class MostradorPiezas extends javax.swing.JDialog {
     Query query1;
     Query query2;
     Query query3;
+    Query query4;
 
     TableModelMarcas tablemarca;
     TableModelModelos tablemodelos;
+    TableModelPiezas tablemodel;
 
     /**
      * Creates new form MostradorPiezas
@@ -61,7 +64,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         query1 = e.createQuery("SELECT p FROM Pieza p WHERE p.idModelo = :id").setParameter(
                 "id", MostradorPiezas.idModelo);
         listapiezas = new Piezas(query1.getResultList());
-        TableModelPiezas tablemodel = new TableModelPiezas(listapiezas);
+        tablemodel = new TableModelPiezas(listapiezas);
         jTable1.setModel(tablemodel);
 
         jTable1.getColumnModel().getColumn(0).setCellRenderer(new IdPIEZA_Renderer());
@@ -109,18 +112,22 @@ public class MostradorPiezas extends javax.swing.JDialog {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        SaveChangesPieza = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        ShowAllPieza = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        SaveChangesMarca = new javax.swing.JButton();
+        DeleteMarca = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        SaveChangesModelo = new javax.swing.JButton();
+        DeleteModelo = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -140,10 +147,62 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTable1.setMaximumSize(new java.awt.Dimension(100, 64));
-        jScrollPane2.setViewportView(jTable1);
+        jScrollPane4.setViewportView(jTable1);
 
-        jTabbedPane1.addTab("Resultados Búsqueda Piezas", jScrollPane2);
+        SaveChangesPieza.setText("Guardar Cambios");
+        SaveChangesPieza.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SaveChangesPiezaActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("Eliminar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        ShowAllPieza.setText("Mostrar Todo");
+        ShowAllPieza.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ShowAllPiezaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(ShowAllPieza)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(SaveChangesPieza)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton5)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ShowAllPieza))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(SaveChangesPieza)
+                    .addComponent(jButton5))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("ListaPiezas", jPanel3);
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -158,17 +217,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
         ));
         jScrollPane1.setViewportView(jTable2);
 
-        jButton1.setText("Guardar Cambios");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        SaveChangesMarca.setText("Guardar Cambios");
+        SaveChangesMarca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                SaveChangesMarcaActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Eliminar marca");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        DeleteMarca.setText("Eliminar marca");
+        DeleteMarca.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                DeleteMarcaActionPerformed(evt);
             }
         });
 
@@ -179,10 +238,10 @@ public class MostradorPiezas extends javax.swing.JDialog {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton1)
+                    .addComponent(SaveChangesMarca)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
-                .addComponent(jButton3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addComponent(DeleteMarca)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -192,9 +251,9 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton3))
-                .addContainerGap(57, Short.MAX_VALUE))
+                    .addComponent(SaveChangesMarca)
+                    .addComponent(DeleteMarca))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Listado Marcas", jPanel1);
@@ -212,14 +271,19 @@ public class MostradorPiezas extends javax.swing.JDialog {
         ));
         jScrollPane3.setViewportView(jTable3);
 
-        jButton4.setText("Guardar Cambios");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        SaveChangesModelo.setText("Guardar Cambios");
+        SaveChangesModelo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                SaveChangesModeloActionPerformed(evt);
             }
         });
 
-        jButton6.setText("Eliminar Modelo");
+        DeleteModelo.setText("Eliminar Modelo");
+        DeleteModelo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteModeloActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -229,9 +293,9 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton4)
-                        .addGap(18, 270, Short.MAX_VALUE)
-                        .addComponent(jButton6))
+                        .addComponent(SaveChangesModelo)
+                        .addGap(18, 298, Short.MAX_VALUE)
+                        .addComponent(DeleteModelo))
                     .addComponent(jScrollPane3))
                 .addContainerGap())
         );
@@ -242,8 +306,8 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4)
-                    .addComponent(jButton6))
+                    .addComponent(SaveChangesModelo)
+                    .addComponent(DeleteModelo))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -268,7 +332,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
 
     }//GEN-LAST:event_formWindowClosing
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void SaveChangesMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesMarcaActionPerformed
 
         int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
                 "Un momento...", JOptionPane.YES_NO_OPTION);
@@ -286,9 +350,9 @@ public class MostradorPiezas extends javax.swing.JDialog {
             }
         }
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_SaveChangesMarcaActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void DeleteMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteMarcaActionPerformed
         int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro? Se eliminarán los modelos \ny piezas correspondientes",
                 "Eliminar marca: " + listamarcas.getMarcaByIndex(jTable2.getSelectedRow()).getMarca(),
                 JOptionPane.OK_CANCEL_OPTION);
@@ -301,6 +365,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
             e.remove(marca);
             e.getTransaction().commit();
             tablemodelos.fireTableRowsDeleted(jTable2.getSelectedRow(), jTable2.getSelectedRow());
+            tablemarca.fireTableRowsDeleted(jTable2.getSelectedRow(), jTable2.getSelectedRow());
         } else {
             if (result == JOptionPane.CANCEL_OPTION) {
                 if (e.getTransaction().isActive()) {
@@ -310,9 +375,9 @@ public class MostradorPiezas extends javax.swing.JDialog {
         }
 
 
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_DeleteMarcaActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void SaveChangesModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesModeloActionPerformed
         int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
                 "Un momento...", JOptionPane.YES_NO_OPTION);
         if (!e.getTransaction().isActive()) {
@@ -329,7 +394,86 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 } 
             }
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_SaveChangesModeloActionPerformed
+
+    private void ShowAllPiezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShowAllPiezaActionPerformed
+        //Muestra todas las piezas
+        query4 = e.createNamedQuery("Pieza.findAll");
+        listapiezas = new Piezas(query4.getResultList());
+        TableModelPiezas tablepiezas2 = new TableModelPiezas(listapiezas);
+        jTable1.setModel(tablepiezas2);
+        
+        jTable1.getColumnModel().getColumn(0).setCellRenderer(new IdPIEZA_Renderer());
+        jTable1.getColumnModel().getColumn(1).setCellRenderer(new ModeloPIEZA_Renderer());
+        jTable1.getColumnModel().getColumn(2).setCellRenderer(new nombrePIEZA_Renderer());
+        jTable1.getColumnModel().getColumn(3).setCellRenderer(new TPiezaPIEZA_Renderer());
+        jTable1.getColumnModel().getColumn(4).setCellRenderer(new DescPIEZA_Renderer());
+        
+        
+    }//GEN-LAST:event_ShowAllPiezaActionPerformed
+
+    private void DeleteModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteModeloActionPerformed
+        int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro?",
+                "Eliminar marca: " + listamodelos.getModeloByIndex(jTable3.getSelectedRow()).getModelo(),
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            if (!e.getTransaction().isActive()) {
+                e.getTransaction().begin();
+            }
+            Modelo modelo = listamodelos.getModeloByIndex(jTable3.getSelectedRow());
+            e.remove(modelo);
+            e.getTransaction().commit();
+            tablemodelos.fireTableRowsDeleted(jTable3.getSelectedRow(), jTable3.getSelectedRow());
+        } else {
+            if (result == JOptionPane.CANCEL_OPTION) {
+                if (e.getTransaction().isActive()) {
+                    e.getTransaction().rollback();
+                }
+            }
+        }
+    }//GEN-LAST:event_DeleteModeloActionPerformed
+
+    private void SaveChangesPiezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesPiezaActionPerformed
+        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
+                "Un momento...", JOptionPane.YES_NO_OPTION);
+        if (!e.getTransaction().isActive()) {
+            e.getTransaction().begin();
+        }
+        
+        if (decision == JOptionPane.YES_OPTION) {
+            e.getTransaction().commit();
+            tablemodel.refreshRow(jTable1.getSelectedRow());
+        } else {
+            if (decision == JOptionPane.NO_OPTION) {
+                if(e.getTransaction().isActive()){
+                    e.getTransaction().rollback();
+                } 
+            }
+        }
+    }//GEN-LAST:event_SaveChangesPiezaActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro?",
+                "Eliminar marca: " + listapiezas.getListaPieza().get(jTable1.getSelectedRow()).getNombre(),
+                JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            if (!e.getTransaction().isActive()) {
+                e.getTransaction().begin();
+            }
+            Pieza pieza = listapiezas.getListaPieza().get(jTable1.getSelectedRow());
+            e.remove(pieza);
+            e.getTransaction().commit();
+            tablemodelos.fireTableRowsDeleted(jTable1.getSelectedRow(), jTable1.getSelectedRow());
+        } else {
+            if (result == JOptionPane.CANCEL_OPTION) {
+                if (e.getTransaction().isActive()) {
+                    e.getTransaction().rollback();
+                }
+            }
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -374,15 +518,19 @@ public class MostradorPiezas extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton DeleteMarca;
+    private javax.swing.JButton DeleteModelo;
+    private javax.swing.JButton SaveChangesMarca;
+    private javax.swing.JButton SaveChangesModelo;
+    private javax.swing.JButton SaveChangesPieza;
+    private javax.swing.JButton ShowAllPieza;
+    private javax.swing.JButton jButton5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;

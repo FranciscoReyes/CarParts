@@ -6,6 +6,7 @@
 package buscaRecambios.TableModels;
 
 import buscaRecambios.Listas.Piezas;
+import buscaRecambios.entity.Pieza;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -76,5 +77,34 @@ public class TableModelPiezas extends AbstractTableModel {
 
         return nombre;
     }
-
+    
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        switch(columnIndex) {
+            case 2:
+                return true;
+            case 4:
+                return true;
+            default:
+                return false;
+        }  
+    }
+    
+    @Override
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        Pieza pieza = listpiezas.getListaPieza().get(rowIndex);
+        
+        switch (columnIndex) {
+            case 2:
+                pieza.setNombre(String.valueOf(aValue));
+                break;
+            case 4:
+                pieza.setDescrip(String.valueOf(aValue));
+           
+        }  
+    }
+    
+    public void refreshRow(int row){
+        this.fireTableRowsUpdated(row, row);
+    }
 }

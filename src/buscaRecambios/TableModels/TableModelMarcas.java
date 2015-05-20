@@ -39,7 +39,7 @@ public class TableModelMarcas extends AbstractTableModel {
                 marcainfo = listMarcas.getId(rowIndex);
                 break;
             case 1:
-                marcainfo = listMarcas.getId(rowIndex);
+                marcainfo = listMarcas.getId(rowIndex).getMarca();
                 break;
             
         }
