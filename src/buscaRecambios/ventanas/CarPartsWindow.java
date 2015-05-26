@@ -145,7 +145,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
         jComboBox5 = new javax.swing.JComboBox();
         jComboBox6 = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        showPiezas = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -237,10 +237,10 @@ public class CarPartsWindow extends javax.swing.JFrame {
         jLabel2.setText("Busqueda por referencias:");
         jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 65, -1, -1));
 
-        jButton1.setText("Mostrar Piezas");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        showPiezas.setText("Mostrar Piezas");
+        showPiezas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                showPiezasActionPerformed(evt);
             }
         });
 
@@ -298,7 +298,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1)
+                        .addComponent(showPiezas)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
@@ -308,17 +308,18 @@ public class CarPartsWindow extends javax.swing.JFrame {
                 .addGap(5, 5, 5)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addComponent(jButton1)
+                .addComponent(showPiezas)
                 .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void showPiezasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showPiezasActionPerformed
         MostradorPiezas.setModelo((Modelo) jComboBox2.getSelectedItem());
+        MostradorPiezas.setMainPanelbyIndex(0);
         new MostradorPiezas(this, true).setVisible(true);
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_showPiezasActionPerformed
 
     private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
         jComboBox3.setVisible(true);
@@ -383,10 +384,12 @@ public class CarPartsWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        MostradorPiezas.setMainPanelbyIndex(1);
         new MostradorPiezas(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
+        MostradorPiezas.setMainPanelbyIndex(2);
         new MostradorPiezas(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
@@ -426,7 +429,6 @@ public class CarPartsWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JComboBox jComboBox3;
@@ -445,6 +447,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JButton showPiezas;
     private javax.swing.JTextField tagText;
     // End of variables declaration//GEN-END:variables
 }

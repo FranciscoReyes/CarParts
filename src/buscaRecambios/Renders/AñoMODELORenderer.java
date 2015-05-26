@@ -6,7 +6,6 @@
 package buscaRecambios.Renders;
 
 
-import buscaRecambios.entity.Modelo;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -17,7 +16,7 @@ public class AñoMODELORenderer extends DefaultTableCellRenderer {
 
     @Override
     protected void setValue(Object value) {
-        setText(String.valueOf(((Modelo) value).getAnno())); 
+        setText(String.valueOf(value)); 
     }
     
 }

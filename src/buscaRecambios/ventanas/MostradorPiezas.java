@@ -8,6 +8,7 @@ package buscaRecambios.ventanas;
 import buscaRecambios.Listas.Marcas;
 import buscaRecambios.Listas.Modelos;
 import buscaRecambios.Listas.Piezas;
+import buscaRecambios.Listas.TiposPieza;
 import buscaRecambios.Renders.AñoMODELORenderer;
 import buscaRecambios.Renders.CcMODELORenderer;
 import buscaRecambios.Renders.CombustibleMODELORenderer;
@@ -30,7 +31,13 @@ import buscaRecambios.entity.Modelo;
 import buscaRecambios.entity.Pieza;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.table.TableColumn;
+import listRenders.MarcaListRenderer;
+import listRenders.TiposListRenderer;
 
 /**
  *
@@ -43,7 +50,8 @@ public class MostradorPiezas extends javax.swing.JDialog {
 
     private Marcas listamarcas;
     private Modelos listamodelos;
-    EntityManager e = CarPartsWindow.entityManager;
+    private TiposPieza listatipPieza;
+    EntityManager e;
 
     Query query1;
     Query query2;
@@ -54,13 +62,21 @@ public class MostradorPiezas extends javax.swing.JDialog {
     TableModelModelos tablemodelos;
     TableModelPiezas tablemodel;
 
+    private static int index;
+
     /**
      * Creates new form MostradorPiezas
      */
     public MostradorPiezas(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        areaDetailsPieza.setVisible(false);
+        
+        e = CarPartsWindow.entityManager;
 
+        jTabbedPane1.setSelectedIndex(index);
+
+        //Tabla con piezas
         query1 = e.createQuery("SELECT p FROM Pieza p WHERE p.idModelo = :id").setParameter(
                 "id", MostradorPiezas.idModelo);
         listapiezas = new Piezas(query1.getResultList());
@@ -73,6 +89,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jTable1.getColumnModel().getColumn(3).setCellRenderer(new TPiezaPIEZA_Renderer());
         jTable1.getColumnModel().getColumn(4).setCellRenderer(new DescPIEZA_Renderer());
 
+        // Tabla con marcas
         query2 = e.createNamedQuery("Marca.findAll");
         listamarcas = new Marcas(query2.getResultList());
 
@@ -82,6 +99,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jTable2.getColumnModel().getColumn(0).setCellRenderer(new IdMARCA_Renderer());
         jTable2.getColumnModel().getColumn(1).setCellRenderer(new MarcaMARCA_Renderer());
 
+        //Tabla con modelos
         query3 = e.createNamedQuery("Modelo.findAll");
         listamodelos = new Modelos(query3.getResultList());
 
@@ -95,11 +113,65 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jTable3.getColumnModel().getColumn(4).setCellRenderer(new CvMODELORenderer());
         jTable3.getColumnModel().getColumn(5).setCellRenderer(new AñoMODELORenderer());
         jTable3.getColumnModel().getColumn(6).setCellRenderer(new CombustibleMODELORenderer());
+        
+        query4 = e.createNamedQuery("TipoPieza.findAll");
+        listatipPieza = new TiposPieza(query4.getResultList());
 
+        // Introducir ComboBox en tabla Modelo con Marcas
+        TableColumn marcaColumn = jTable3.getColumnModel().getColumn(1);
+        JComboBox comboBoxCellMarca = new JComboBox();
+        comboBoxCellMarca.setModel(new DefaultComboBoxModel(listamarcas.getListaMarcas().toArray()));
+        comboBoxCellMarca.setRenderer(new MarcaListRenderer());
+        marcaColumn.setCellEditor(new DefaultCellEditor(comboBoxCellMarca));
+        
+        // Introducir ComboBox en tabla piezas con TiposPiezas
+        TableColumn tipoColumn = jTable1.getColumnModel().getColumn(3);
+        JComboBox comboBoxCellTPieza = new JComboBox();
+        comboBoxCellTPieza.setModel(new DefaultComboBoxModel(listatipPieza.getListaTipoPiezas().toArray()));
+        comboBoxCellTPieza.setRenderer(new TiposListRenderer());
+        tipoColumn.setCellEditor(new DefaultCellEditor(comboBoxCellTPieza));
+        
     }
 
     public static void setModelo(Modelo idModelo) {
         MostradorPiezas.idModelo = idModelo;
+    }
+
+    public static void setMainPanelbyIndex(int index) {
+        MostradorPiezas.index = index;
+
+    }
+
+    public void showDetails() {
+        int indexSelectedRow = jTable1.getSelectedRow();
+        if (indexSelectedRow < 0) {
+            areaDetailsPieza.setText("Sin selección");
+        } else {
+
+            areaDetailsPieza.setText("Id: " + String.valueOf(listapiezas.getListaPieza().get(indexSelectedRow).getIdPieza())
+                    + "\nModelo: " + listapiezas.getListaPieza().get(indexSelectedRow).getIdModelo().getModelo() + "\nNombre: "
+                    + listapiezas.getListaPieza().get(indexSelectedRow).getNombre() + "\nTipo: "
+                    + listapiezas.getListaPieza().get(indexSelectedRow).getIdTipoPieza().getTipo() + "\nDescripción: "
+                    + listapiezas.getListaPieza().get(indexSelectedRow).getDescrip());
+        }
+    }
+    
+    private void refreshLists() {
+        query1 = e.createQuery("SELECT p FROM Pieza p WHERE p.idModelo = :id").setParameter(
+                "id", MostradorPiezas.idModelo);
+        listapiezas = new Piezas(query1.getResultList());
+        tablemodel = new TableModelPiezas(listapiezas);
+        jTable1.setModel(tablemodel);
+        
+        query2 = e.createNamedQuery("Marca.findAll");
+        listamarcas = new Marcas(query2.getResultList());
+        tablemarca = new TableModelMarcas(listamarcas);
+        jTable2.setModel(tablemarca);
+        
+        query3 = e.createNamedQuery("Modelo.findAll");
+        listamodelos = new Modelos(query3.getResultList());
+        tablemodelos = new TableModelModelos(listamodelos);
+        jTable3.setModel(tablemodelos);
     }
 
     /**
@@ -116,8 +188,10 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jScrollPane4 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         SaveChangesPieza = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        DeletePieza = new javax.swing.JButton();
         ShowAllPieza = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        areaDetailsPieza = new javax.swing.JTextArea();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
@@ -147,6 +221,11 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane4.setViewportView(jTable1);
 
         SaveChangesPieza.setText("Guardar Cambios");
@@ -156,10 +235,10 @@ public class MostradorPiezas extends javax.swing.JDialog {
             }
         });
 
-        jButton5.setText("Eliminar");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        DeletePieza.setText("Eliminar");
+        DeletePieza.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                DeletePiezaActionPerformed(evt);
             }
         });
 
@@ -170,22 +249,30 @@ public class MostradorPiezas extends javax.swing.JDialog {
             }
         });
 
+        areaDetailsPieza.setEditable(false);
+        areaDetailsPieza.setColumns(20);
+        areaDetailsPieza.setLineWrap(true);
+        areaDetailsPieza.setRows(5);
+        jScrollPane2.setViewportView(areaDetailsPieza);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(ShowAllPieza)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(SaveChangesPieza)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton5)))
+                        .addGap(227, 227, 227)
+                        .addComponent(DeletePieza))
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(ShowAllPieza)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -194,11 +281,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ShowAllPieza))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 19, Short.MAX_VALUE)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(SaveChangesPieza)
-                    .addComponent(jButton5))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(ShowAllPieza)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(SaveChangesPieza))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(DeletePieza)))
                 .addContainerGap())
         );
 
@@ -240,7 +333,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(SaveChangesMarca)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
                 .addComponent(DeleteMarca)
                 .addContainerGap())
         );
@@ -294,7 +387,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(SaveChangesModelo)
-                        .addGap(18, 298, Short.MAX_VALUE)
+                        .addGap(18, 421, Short.MAX_VALUE)
                         .addComponent(DeleteModelo))
                     .addComponent(jScrollPane3))
                 .addContainerGap())
@@ -333,26 +426,30 @@ public class MostradorPiezas extends javax.swing.JDialog {
     }//GEN-LAST:event_formWindowClosing
 
     private void SaveChangesMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesMarcaActionPerformed
-
-        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
+        //Preguntar con OptionPane su decisión y recogemos el resultado 
+        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios",
                 "Un momento...", JOptionPane.YES_NO_OPTION);
         if (!e.getTransaction().isActive()) {
             e.getTransaction().begin();
         }
-        
+
         if (decision == JOptionPane.YES_OPTION) {
             e.getTransaction().commit();
-            tablemarca.refreshRow(jTable2.getSelectedRow());
+            tablemarca.fireTableDataChanged();
+            this.refreshLists();
+            this.setVisible(false);
+            this.dispose();
         } else {
             if (decision == JOptionPane.NO_OPTION) {
                 e.getTransaction().rollback();
-                
+                this.refreshLists();
             }
         }
 
     }//GEN-LAST:event_SaveChangesMarcaActionPerformed
 
     private void DeleteMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteMarcaActionPerformed
+        //Preguntar con OptionPane su decisión y recogemos el resultado
         int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro? Se eliminarán los modelos \ny piezas correspondientes",
                 "Eliminar marca: " + listamarcas.getMarcaByIndex(jTable2.getSelectedRow()).getMarca(),
                 JOptionPane.OK_CANCEL_OPTION);
@@ -366,10 +463,14 @@ public class MostradorPiezas extends javax.swing.JDialog {
             e.getTransaction().commit();
             tablemodelos.fireTableRowsDeleted(jTable2.getSelectedRow(), jTable2.getSelectedRow());
             tablemarca.fireTableRowsDeleted(jTable2.getSelectedRow(), jTable2.getSelectedRow());
+            this.refreshLists();
+            this.setVisible(false);
+            this.dispose();
         } else {
             if (result == JOptionPane.CANCEL_OPTION) {
                 if (e.getTransaction().isActive()) {
                     e.getTransaction().rollback();
+                    this.refreshLists();
                 }
             }
         }
@@ -378,20 +479,25 @@ public class MostradorPiezas extends javax.swing.JDialog {
     }//GEN-LAST:event_DeleteMarcaActionPerformed
 
     private void SaveChangesModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesModeloActionPerformed
-        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
+        //Preguntar con OptionPane su decisión y recogemos el resultado
+        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios",
                 "Un momento...", JOptionPane.YES_NO_OPTION);
         if (!e.getTransaction().isActive()) {
             e.getTransaction().begin();
         }
-        
+
         if (decision == JOptionPane.YES_OPTION) {
             e.getTransaction().commit();
             tablemodelos.refreshRow(jTable3.getSelectedRow());
+            this.setVisible(false);
+            this.dispose();
+            this.refreshLists();
         } else {
             if (decision == JOptionPane.NO_OPTION) {
-                if(e.getTransaction().isActive()){
+                if (e.getTransaction().isActive()) {
                     e.getTransaction().rollback();
-                } 
+                    this.refreshLists();
+                }
             }
         }
     }//GEN-LAST:event_SaveChangesModeloActionPerformed
@@ -402,17 +508,24 @@ public class MostradorPiezas extends javax.swing.JDialog {
         listapiezas = new Piezas(query4.getResultList());
         TableModelPiezas tablepiezas2 = new TableModelPiezas(listapiezas);
         jTable1.setModel(tablepiezas2);
-        
+
         jTable1.getColumnModel().getColumn(0).setCellRenderer(new IdPIEZA_Renderer());
         jTable1.getColumnModel().getColumn(1).setCellRenderer(new ModeloPIEZA_Renderer());
         jTable1.getColumnModel().getColumn(2).setCellRenderer(new nombrePIEZA_Renderer());
         jTable1.getColumnModel().getColumn(3).setCellRenderer(new TPiezaPIEZA_Renderer());
         jTable1.getColumnModel().getColumn(4).setCellRenderer(new DescPIEZA_Renderer());
-        
+
+        // Introducir ComboBox en tabla piezas con TiposPiezas
+        TableColumn tipoColumn = jTable1.getColumnModel().getColumn(3);
+        JComboBox comboBoxCellTPieza = new JComboBox();
+        comboBoxCellTPieza.setModel(new DefaultComboBoxModel(listatipPieza.getListaTipoPiezas().toArray()));
+        comboBoxCellTPieza.setRenderer(new TiposListRenderer());
+        tipoColumn.setCellEditor(new DefaultCellEditor(comboBoxCellTPieza));
         
     }//GEN-LAST:event_ShowAllPiezaActionPerformed
 
     private void DeleteModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteModeloActionPerformed
+        //Preguntar con OptionPane su decisión y recogemos el resultado
         int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro?",
                 "Eliminar marca: " + listamodelos.getModeloByIndex(jTable3.getSelectedRow()).getModelo(),
                 JOptionPane.OK_CANCEL_OPTION);
@@ -425,37 +538,47 @@ public class MostradorPiezas extends javax.swing.JDialog {
             e.remove(modelo);
             e.getTransaction().commit();
             tablemodelos.fireTableRowsDeleted(jTable3.getSelectedRow(), jTable3.getSelectedRow());
+            this.setVisible(false);
+            this.dispose();
+            this.refreshLists();
         } else {
             if (result == JOptionPane.CANCEL_OPTION) {
                 if (e.getTransaction().isActive()) {
                     e.getTransaction().rollback();
+                    this.refreshLists();
                 }
             }
         }
     }//GEN-LAST:event_DeleteModeloActionPerformed
 
     private void SaveChangesPiezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveChangesPiezaActionPerformed
-        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios", 
+        //Preguntar con OptionPane su decisión y recogemos el resultado
+        int decision = JOptionPane.showConfirmDialog(this, "Estas seguro que quieres guardar los cambios",
                 "Un momento...", JOptionPane.YES_NO_OPTION);
         if (!e.getTransaction().isActive()) {
             e.getTransaction().begin();
         }
-        
+
         if (decision == JOptionPane.YES_OPTION) {
             e.getTransaction().commit();
             tablemodel.refreshRow(jTable1.getSelectedRow());
+            this.setVisible(false);
+            this.dispose();
+            this.refreshLists();
         } else {
             if (decision == JOptionPane.NO_OPTION) {
-                if(e.getTransaction().isActive()){
+                if (e.getTransaction().isActive()) {
                     e.getTransaction().rollback();
-                } 
+                    this.refreshLists();
+                }
             }
         }
     }//GEN-LAST:event_SaveChangesPiezaActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void DeletePiezaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeletePiezaActionPerformed
+        //Preguntar con OptionPane su decisión y recogemos el resultado
         int result = JOptionPane.showConfirmDialog(this, "¿Estás seguro?",
-                "Eliminar marca: " + listapiezas.getListaPieza().get(jTable1.getSelectedRow()).getNombre(),
+                "Eliminar pieza: " + listapiezas.getListaPieza().get(jTable1.getSelectedRow()).getNombre(),
                 JOptionPane.OK_CANCEL_OPTION);
 
         if (result == JOptionPane.OK_OPTION) {
@@ -466,14 +589,23 @@ public class MostradorPiezas extends javax.swing.JDialog {
             e.remove(pieza);
             e.getTransaction().commit();
             tablemodelos.fireTableRowsDeleted(jTable1.getSelectedRow(), jTable1.getSelectedRow());
+            this.setVisible(false);
+            this.dispose();
+            this.refreshLists();
         } else {
             if (result == JOptionPane.CANCEL_OPTION) {
                 if (e.getTransaction().isActive()) {
                     e.getTransaction().rollback();
+                    this.refreshLists();
                 }
             }
         }
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_DeletePiezaActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        areaDetailsPieza.setVisible(false);
+        this.showDetails();
+    }//GEN-LAST:event_jTable1MouseClicked
 
     /**
      * @param args the command line arguments
@@ -520,15 +652,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DeleteMarca;
     private javax.swing.JButton DeleteModelo;
+    private javax.swing.JButton DeletePieza;
     private javax.swing.JButton SaveChangesMarca;
     private javax.swing.JButton SaveChangesModelo;
     private javax.swing.JButton SaveChangesPieza;
     private javax.swing.JButton ShowAllPieza;
-    private javax.swing.JButton jButton5;
+    private javax.swing.JTextArea areaDetailsPieza;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane1;

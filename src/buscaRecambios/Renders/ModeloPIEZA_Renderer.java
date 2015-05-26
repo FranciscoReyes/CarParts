@@ -5,7 +5,6 @@
  */
 package buscaRecambios.Renders;
 
-import buscaRecambios.entity.Pieza;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -16,7 +15,7 @@ public class ModeloPIEZA_Renderer extends DefaultTableCellRenderer{
     
     @Override
     protected void setValue(Object value) {
-        setText(((Pieza) value).getIdModelo().getModelo());
+        setText(String.valueOf(value));
     }
     
 }

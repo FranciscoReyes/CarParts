@@ -7,7 +7,7 @@ package buscaRecambios.ventanas;
 
 import buscaRecambios.Listas.Marcas;
 import buscaRecambios.Listas.Modelos;
-import buscaRecambios.MaxLengthDocument;
+import LengthDocument.MaxLengthDocument;
 import buscaRecambios.Renders.AñoMODELORenderer;
 import buscaRecambios.Renders.CcMODELORenderer;
 import buscaRecambios.Renders.CombustibleMODELORenderer;

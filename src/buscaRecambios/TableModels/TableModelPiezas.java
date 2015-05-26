@@ -36,19 +36,19 @@ public class TableModelPiezas extends AbstractTableModel {
 
         switch (columnIndex) {
             case 0:
-                piezaInfo = listpiezas.getListaPieza().get(rowIndex);
+                piezaInfo = listpiezas.getListaPieza().get(rowIndex).getIdPieza();
                 break;
             case 1:
-                piezaInfo = listpiezas.getListaPieza().get(rowIndex);
+                piezaInfo = listpiezas.getListaPieza().get(rowIndex).getIdModelo().getModelo();
                 break;
             case 2:
-                piezaInfo = listpiezas.getListaPieza().get(rowIndex);
+                piezaInfo = listpiezas.getListaPieza().get(rowIndex).getNombre();
                 break;
             case 3:
-                piezaInfo = listpiezas.getListaPieza().get(rowIndex);
+                piezaInfo = listpiezas.getListaPieza().get(rowIndex).getIdTipoPieza().getTipo();
                 break;
             case 4:
-                piezaInfo = listpiezas.getListaPieza().get(rowIndex);
+                piezaInfo = listpiezas.getListaPieza().get(rowIndex).getDescrip();
                 break;
         }
         return piezaInfo;
@@ -82,6 +82,8 @@ public class TableModelPiezas extends AbstractTableModel {
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         switch(columnIndex) {
             case 2:
+                return true;
+            case 3:
                 return true;
             case 4:
                 return true;

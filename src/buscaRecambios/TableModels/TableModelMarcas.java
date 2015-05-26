@@ -36,7 +36,7 @@ public class TableModelMarcas extends AbstractTableModel {
         
         switch (columnIndex) {
             case 0:
-                marcainfo = listMarcas.getId(rowIndex);
+                marcainfo = listMarcas.getId(rowIndex).getId();
                 break;
             case 1:
                 marcainfo = listMarcas.getId(rowIndex).getMarca();

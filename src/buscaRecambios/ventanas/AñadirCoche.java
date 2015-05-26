@@ -5,6 +5,7 @@
  */
 package buscaRecambios.ventanas;
 
+import LengthDocument.MaxLengthDocument;
 import buscaRecambios.Listas.Marcas;
 import buscaRecambios.Listas.Modelos;
 import buscaRecambios.entity.Marca;
@@ -41,6 +42,12 @@ public class AñadirCoche extends javax.swing.JDialog {
         jComboBox1.setRenderer(new MarcaListRenderer());
 
         System.out.println(modeloField.getText());
+        
+        newMarcaField.setDocument(new MaxLengthDocument(newMarcaField.getColumns()));
+        modeloField.setDocument(new MaxLengthDocument(modeloField.getColumns()));
+        ccField.setDocument(new MaxLengthDocument(ccField.getColumns()));
+        cvField.setDocument(new MaxLengthDocument(cvField.getColumns()));
+        añoField.setDocument(new MaxLengthDocument(añoField.getColumns()));
     }
 
     public static void setListas(Modelos listamodelos, Marcas listamarcas) {
@@ -124,6 +131,7 @@ public class AñadirCoche extends javax.swing.JDialog {
             }
         });
 
+        newMarcaField.setColumns(20);
         newMarcaField.setToolTipText("insertar nombre marca...");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -154,11 +162,19 @@ public class AñadirCoche extends javax.swing.JDialog {
 
         jLabel3.setText("Modelo:");
 
+        modeloField.setColumns(20);
+
         jLabel4.setText("c.c:");
+
+        ccField.setColumns(4);
 
         jLabel5.setText("cv:");
 
+        cvField.setColumns(4);
+
         jLabel6.setText("año:");
+
+        añoField.setColumns(4);
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gasolina", "Diésel", "Híbrido", "Eléctrico" }));
 

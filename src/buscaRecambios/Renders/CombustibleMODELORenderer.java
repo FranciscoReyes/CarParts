@@ -5,7 +5,6 @@
  */
 package buscaRecambios.Renders;
 
-import buscaRecambios.entity.Modelo;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -16,6 +15,6 @@ public class CombustibleMODELORenderer extends DefaultTableCellRenderer {
     
     @Override
     protected void setValue(Object value) {
-        setText(((Modelo)value).getCombustible() );
+        setText(String.valueOf(value));
     }
 }

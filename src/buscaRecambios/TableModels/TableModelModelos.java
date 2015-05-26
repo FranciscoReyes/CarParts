@@ -6,6 +6,7 @@
 package buscaRecambios.TableModels;
 
 import buscaRecambios.Listas.Modelos;
+import buscaRecambios.entity.Marca;
 import buscaRecambios.entity.Modelo;
 import javax.swing.table.AbstractTableModel;
 
@@ -36,25 +37,25 @@ public class TableModelModelos extends AbstractTableModel {
         
         switch (columnIndex) {
             case 0:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getIdModelo();
                 break;
             case 1:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getIdMarca().getMarca();
                 break;
             case 2:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getModelo();
                 break;
             case 3:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getCilindrada();
                 break;
             case 4:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getCv();
                 break;
             case 5:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getAnno();
                 break;
             case 6:
-                modeloInfo = listmodelos.getListamodelos().get(rowIndex);
+                modeloInfo = listmodelos.getListamodelos().get(rowIndex).getCombustible();
                 break;
         }
         
@@ -98,7 +99,7 @@ public class TableModelModelos extends AbstractTableModel {
             case 0:
                 return false;
             case 1:
-                return false;
+                return true;
             default:
                 return true;
         }       
@@ -110,6 +111,9 @@ public class TableModelModelos extends AbstractTableModel {
         Modelo modelo = listmodelos.getListamodelos().get(rowIndex);
         
         switch (columnIndex) {
+            case 1:
+                modelo.setIdMarca((Marca) aValue);
+                break;
             case 2:
                 modelo.setModelo(String.valueOf(aValue));
                 break;

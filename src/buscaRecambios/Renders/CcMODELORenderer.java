@@ -5,7 +5,6 @@
  */
 package buscaRecambios.Renders;
 
-import buscaRecambios.entity.Modelo;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -16,7 +15,7 @@ public class CcMODELORenderer extends DefaultTableCellRenderer {
 
     @Override
     protected void setValue(Object value) {
-        setText(String.valueOf(((Modelo) value).getCilindrada()));
+        setText(String.valueOf(value));
     }
     
 }
