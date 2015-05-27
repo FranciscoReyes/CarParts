@@ -163,18 +163,22 @@ public class AñadirCoche extends javax.swing.JDialog {
         jLabel3.setText("Modelo:");
 
         modeloField.setColumns(20);
+        modeloField.setToolTipText("insertar modelo + variante");
 
         jLabel4.setText("c.c:");
 
         ccField.setColumns(4);
+        ccField.setToolTipText("insertar cilindrada (Ej: 1900)");
 
         jLabel5.setText("cv:");
 
         cvField.setColumns(4);
+        cvField.setToolTipText("insertar Cv del modelo");
 
         jLabel6.setText("año:");
 
         añoField.setColumns(4);
+        añoField.setToolTipText("año de construcción");
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Gasolina", "Diésel", "Híbrido", "Eléctrico" }));
 
@@ -290,6 +294,14 @@ public class AñadirCoche extends javax.swing.JDialog {
 //        jComboBox1.setRenderer(new MarcaListRenderer());
 
         e.getTransaction().commit();
+        JOptionPane.showMessageDialog(this, "Se ha insertado el modelo con éxito", "Correcto", 
+                JOptionPane.INFORMATION_MESSAGE);
+        newMarcaField.setText(null);
+        modeloField.setText(null);
+        ccField.setText(null);
+        cvField.setText(null);
+        añoField.setText(null);
+        
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Datos del modelo incompletos", "Cuidado", JOptionPane.WARNING_MESSAGE);
         }

@@ -117,6 +117,7 @@ public class AñadirPieza extends javax.swing.JDialog {
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Añade nueva categoria de pieza"));
 
         newPiezaText.setColumns(20);
+        newPiezaText.setToolTipText("añade una categoría nueva para piezas");
 
         jButton2.setText("Añade categoria");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -157,6 +158,7 @@ public class AñadirPieza extends javax.swing.JDialog {
         descripText.setColumns(40);
         descripText.setLineWrap(true);
         descripText.setRows(3);
+        descripText.setToolTipText("Descripción (no más de 160 caracteres)");
         jScrollPane1.setViewportView(descripText);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

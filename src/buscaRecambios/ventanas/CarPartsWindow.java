@@ -24,6 +24,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import listRenders.MarcaListRenderer;
 import listRenders.ModeloAnnoListRenderer;
 import listRenders.ModeloCCListRenderer;
@@ -48,7 +49,10 @@ public class CarPartsWindow extends javax.swing.JFrame {
 
     TipoPieza tpieza;
     TiposPieza listatpiezas;
-
+    
+    Query query;
+    Query query2;
+    Query query3;
     Query query4;
     Query query5;
 
@@ -68,12 +72,17 @@ public class CarPartsWindow extends javax.swing.JFrame {
         jComboBox6.setVisible(false);
 
         //Conexión a base de datos con Persistence
-        entityManager = Persistence.createEntityManagerFactory("buscaRecambiosPU").createEntityManager();
+        try {
+           entityManager = Persistence.createEntityManagerFactory("buscaRecambiosPU").createEntityManager(); 
+        } catch (Exception e1){
+            JOptionPane.showMessageDialog(this, "No existe conexión con la base de datos", "Error conexión BBDD", JOptionPane.WARNING_MESSAGE);
+        }
+        
         //Consultas para obtener toda la información de Marca, Modelo, Pieza
-        Query query = entityManager.createNamedQuery("Marca.findAll");
-        Query query2 = entityManager.createNamedQuery("Modelo.findAll");
-        Query query3 = entityManager.createNamedQuery("Pieza.findAll");
-        Query query4 = entityManager.createNamedQuery("TipoPieza.findAll");
+        query = entityManager.createNamedQuery("Marca.findAll");
+        query2 = entityManager.createNamedQuery("Modelo.findAll");
+        query3 = entityManager.createNamedQuery("Pieza.findAll");
+        query4 = entityManager.createNamedQuery("TipoPieza.findAll");
         //Lista de resultados obtenidos instrucciones anteriores
         listamarca = new Marcas(query.getResultList());
         listamodelos = new Modelos(query2.getResultList());
@@ -84,14 +93,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
         jComboBox1.setModel(new DefaultComboBoxModel(listamarca.getListaMarcas().toArray()));
         jComboBox1.setRenderer(new MarcaListRenderer());
 
-        //Comprobando las marcas
-        for (Marca marca : listamarca.getListaMarcas()) {
-            System.out.println(marca.getMarca());
-        }
         
-        for (TipoPieza tipo : listatpiezas.getListaTipoPiezas()) {
-            System.out.println(tipo.getTipo());
-        }
         //Conexion Base de datos con JDBC. Probando sacando las marcas
         try {
             Class.forName("com.mysql.jdbc.Driver").newInstance();
@@ -145,7 +147,10 @@ public class CarPartsWindow extends javax.swing.JFrame {
         jComboBox5 = new javax.swing.JComboBox();
         jComboBox6 = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
         showPiezas = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        areaConsult = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -163,13 +168,10 @@ public class CarPartsWindow extends javax.swing.JFrame {
         });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("Busqueda por texto:");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 11, -1, -1));
 
         tagText.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel2.add(tagText, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 36, 158, -1));
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
@@ -211,7 +213,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jComboBox5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                         .addComponent(jComboBox6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jComboBox2, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -232,10 +234,49 @@ public class CarPartsWindow extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel2.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 85, -1, -1));
-
         jLabel2.setText("Busqueda por referencias:");
-        jPanel2.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 65, -1, -1));
+
+        jButton1.setText("Consultar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(8, 8, 8)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(tagText, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton1))
+                            .addComponent(jLabel2))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(9, 9, 9)
+                .addComponent(jLabel1)
+                .addGap(10, 10, 10)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tagText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton1))
+                .addGap(7, 7, 7)
+                .addComponent(jLabel2)
+                .addGap(6, 6, 6)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         showPiezas.setText("Mostrar Piezas");
         showPiezas.addActionListener(new java.awt.event.ActionListener() {
@@ -244,12 +285,18 @@ public class CarPartsWindow extends javax.swing.JFrame {
             }
         });
 
+        areaConsult.setEditable(false);
+        areaConsult.setColumns(20);
+        areaConsult.setLineWrap(true);
+        areaConsult.setRows(5);
+        jScrollPane1.setViewportView(areaConsult);
+
         jMenu1.setText("Inicio");
         jMenuBar1.add(jMenu1);
 
         jMenu2.setText("Añadir");
 
-        jMenuItem2.setText("Modelo");
+        jMenuItem2.setText("Modelo/Marca");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem2ActionPerformed(evt);
@@ -257,7 +304,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
         });
         jMenu2.add(jMenuItem2);
 
-        jMenuItem3.setText("Pieza");
+        jMenuItem3.setText("Pieza/Tipo");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem3ActionPerformed(evt);
@@ -296,19 +343,24 @@ public class CarPartsWindow extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(showPiezas)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addComponent(showPiezas)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
+                        .addComponent(showPiezas)))
                 .addContainerGap())
         );
 
@@ -316,6 +368,10 @@ public class CarPartsWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void showPiezasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showPiezasActionPerformed
+        if (!tagText.getText().isEmpty()) {
+            
+        }
+        
         MostradorPiezas.setModelo((Modelo) jComboBox2.getSelectedItem());
         MostradorPiezas.setMainPanelbyIndex(0);
         new MostradorPiezas(this, true).setVisible(true);
@@ -393,6 +449,36 @@ public class CarPartsWindow extends javax.swing.JFrame {
         new MostradorPiezas(this, true).setVisible(true);
     }//GEN-LAST:event_jMenuItem5ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        //Conexion Base de datos con JDBC. Probando sacando las marcas
+//        try {
+//            Class.forName("com.mysql.jdbc.Driver").newInstance();
+//        } catch (Exception e) {
+//            System.out.println("Error Driver");
+//        }
+//        try {
+//        connection = DriverManager.getConnection("jdbc:mysql://localhost/carparts", "root", null);
+//        } catch (Exception e1){
+//            System.out.println("Error connection");
+//        }
+        
+        //Consulta por texto
+        Statement sentencia;
+        try {
+            sentencia = connection.createStatement();
+            ResultSet rs = sentencia.executeQuery(
+                    "SELECT * FROM Modelo WHERE idMarca = (SELECT Id FROM Marca WHERE marca = "
+                    + tagText.getText() + ")");
+            while (rs.next()) {
+                String marcasql = rs.getString("modelo");
+                int id = rs.getInt("idModelo");
+                areaConsult.setText("Modelo: " + marcasql +"\nId: "+id);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarPartsWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -429,6 +515,8 @@ public class CarPartsWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextArea areaConsult;
+    private javax.swing.JButton jButton1;
     private javax.swing.JComboBox jComboBox1;
     private javax.swing.JComboBox jComboBox2;
     private javax.swing.JComboBox jComboBox3;
@@ -447,6 +535,7 @@ public class CarPartsWindow extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton showPiezas;
     private javax.swing.JTextField tagText;
     // End of variables declaration//GEN-END:variables

@@ -222,6 +222,7 @@
         <Component class="javax.swing.JTextField" name="modeloField">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="toolTipText" type="java.lang.String" value="insertar modelo + variante"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel4">
@@ -232,6 +233,7 @@
         <Component class="javax.swing.JTextField" name="ccField">
           <Properties>
             <Property name="columns" type="int" value="4"/>
+            <Property name="toolTipText" type="java.lang.String" value="insertar cilindrada (Ej: 1900)"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel5">
@@ -242,6 +244,7 @@
         <Component class="javax.swing.JTextField" name="cvField">
           <Properties>
             <Property name="columns" type="int" value="4"/>
+            <Property name="toolTipText" type="java.lang.String" value="insertar Cv del modelo"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel6">
@@ -252,6 +255,7 @@
         <Component class="javax.swing.JTextField" name="a&#xf1;oField">
           <Properties>
             <Property name="columns" type="int" value="4"/>
+            <Property name="toolTipText" type="java.lang.String" value="a&#xf1;o de construcci&#xf3;n"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JComboBox" name="jComboBox2">

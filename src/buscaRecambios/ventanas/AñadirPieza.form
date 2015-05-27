@@ -162,6 +162,7 @@
         <Component class="javax.swing.JTextField" name="newPiezaText">
           <Properties>
             <Property name="columns" type="int" value="20"/>
+            <Property name="toolTipText" type="java.lang.String" value="a&#xf1;ade una categor&#xed;a nueva para piezas"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JButton" name="jButton2">
@@ -206,6 +207,7 @@
             <Property name="columns" type="int" value="40"/>
             <Property name="lineWrap" type="boolean" value="true"/>
             <Property name="rows" type="int" value="3"/>
+            <Property name="toolTipText" type="java.lang.String" value="Descripci&#xf3;n (no m&#xe1;s de 160 caracteres)"/>
           </Properties>
         </Component>
       </SubComponents>

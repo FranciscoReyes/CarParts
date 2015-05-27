@@ -29,6 +29,15 @@ import buscaRecambios.TableModels.TableModelPiezas;
 import buscaRecambios.entity.Marca;
 import buscaRecambios.entity.Modelo;
 import buscaRecambios.entity.Pieza;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.DefaultCellEditor;
@@ -38,6 +47,13 @@ import javax.swing.JOptionPane;
 import javax.swing.table.TableColumn;
 import listRenders.MarcaListRenderer;
 import listRenders.TiposListRenderer;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRResultSetDataSource;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -64,6 +80,8 @@ public class MostradorPiezas extends javax.swing.JDialog {
 
     private static int index;
 
+    Connection connection;
+
     /**
      * Creates new form MostradorPiezas
      */
@@ -71,7 +89,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         areaDetailsPieza.setVisible(false);
-        
+
         e = CarPartsWindow.entityManager;
 
         jTabbedPane1.setSelectedIndex(index);
@@ -113,7 +131,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jTable3.getColumnModel().getColumn(4).setCellRenderer(new CvMODELORenderer());
         jTable3.getColumnModel().getColumn(5).setCellRenderer(new AñoMODELORenderer());
         jTable3.getColumnModel().getColumn(6).setCellRenderer(new CombustibleMODELORenderer());
-        
+
         query4 = e.createNamedQuery("TipoPieza.findAll");
         listatipPieza = new TiposPieza(query4.getResultList());
 
@@ -123,14 +141,14 @@ public class MostradorPiezas extends javax.swing.JDialog {
         comboBoxCellMarca.setModel(new DefaultComboBoxModel(listamarcas.getListaMarcas().toArray()));
         comboBoxCellMarca.setRenderer(new MarcaListRenderer());
         marcaColumn.setCellEditor(new DefaultCellEditor(comboBoxCellMarca));
-        
+
         // Introducir ComboBox en tabla piezas con TiposPiezas
         TableColumn tipoColumn = jTable1.getColumnModel().getColumn(3);
         JComboBox comboBoxCellTPieza = new JComboBox();
         comboBoxCellTPieza.setModel(new DefaultComboBoxModel(listatipPieza.getListaTipoPiezas().toArray()));
         comboBoxCellTPieza.setRenderer(new TiposListRenderer());
         tipoColumn.setCellEditor(new DefaultCellEditor(comboBoxCellTPieza));
-        
+
     }
 
     public static void setModelo(Modelo idModelo) {
@@ -148,30 +166,58 @@ public class MostradorPiezas extends javax.swing.JDialog {
             areaDetailsPieza.setText("Sin selección");
         } else {
 
-            areaDetailsPieza.setText("Id: " + String.valueOf(listapiezas.getListaPieza().get(indexSelectedRow).getIdPieza())
+            areaDetailsPieza.setText("\nMarca: " + listapiezas.getListaPieza().get(indexSelectedRow).getIdModelo().getIdMarca().getMarca()
                     + "\nModelo: " + listapiezas.getListaPieza().get(indexSelectedRow).getIdModelo().getModelo() + "\nNombre: "
                     + listapiezas.getListaPieza().get(indexSelectedRow).getNombre() + "\nTipo: "
                     + listapiezas.getListaPieza().get(indexSelectedRow).getIdTipoPieza().getTipo() + "\nDescripción: "
                     + listapiezas.getListaPieza().get(indexSelectedRow).getDescrip());
         }
     }
-    
+
     private void refreshLists() {
         query1 = e.createQuery("SELECT p FROM Pieza p WHERE p.idModelo = :id").setParameter(
                 "id", MostradorPiezas.idModelo);
         listapiezas = new Piezas(query1.getResultList());
         tablemodel = new TableModelPiezas(listapiezas);
         jTable1.setModel(tablemodel);
-        
+
         query2 = e.createNamedQuery("Marca.findAll");
         listamarcas = new Marcas(query2.getResultList());
         tablemarca = new TableModelMarcas(listamarcas);
         jTable2.setModel(tablemarca);
-        
+
         query3 = e.createNamedQuery("Modelo.findAll");
         listamodelos = new Modelos(query3.getResultList());
         tablemodelos = new TableModelModelos(listamodelos);
         jTable3.setModel(tablemodelos);
+    }
+
+    public void jdbcQuery(String consult) {
+        //Conexion Base de datos con JDBC. Probando sacando las marcas
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+        } catch (Exception e) {
+            System.out.println("Error Driver");
+        }
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/carparts", "root", null);
+        } catch (Exception e1) {
+            System.out.println("Error connection");
+        }
+
+        Statement sentencia;
+        try {
+            sentencia = connection.createStatement();
+            ResultSet rs = sentencia.executeQuery("SELECT * FROM Marca");
+            while (rs.next()) {
+                String marcasql = rs.getString("Marca");
+                int id = rs.getInt("Id");
+                System.out.println(marcasql);
+                System.out.println(id);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarPartsWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -197,6 +243,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         jTable2 = new javax.swing.JTable();
         SaveChangesMarca = new javax.swing.JButton();
         DeleteMarca = new javax.swing.JButton();
+        showPDF = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable3 = new javax.swing.JTable();
@@ -269,7 +316,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 411, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(ShowAllPieza)
                         .addGap(0, 0, Short.MAX_VALUE)))
@@ -324,24 +371,36 @@ public class MostradorPiezas extends javax.swing.JDialog {
             }
         });
 
+        showPDF.setText("Mostrar PDF");
+        showPDF.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showPDFActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(SaveChangesMarca)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(SaveChangesMarca)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(DeleteMarca))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 378, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 162, Short.MAX_VALUE)
-                .addComponent(DeleteMarca)
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addComponent(showPDF)
+                .addContainerGap(147, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(showPDF))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(SaveChangesMarca)
@@ -387,7 +446,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(SaveChangesModelo)
-                        .addGap(18, 421, Short.MAX_VALUE)
+                        .addGap(18, 404, Short.MAX_VALUE)
                         .addComponent(DeleteModelo))
                     .addComponent(jScrollPane3))
                 .addContainerGap())
@@ -410,7 +469,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 649, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -434,11 +493,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
         }
 
         if (decision == JOptionPane.YES_OPTION) {
-            e.getTransaction().commit();
-            tablemarca.fireTableDataChanged();
-            this.refreshLists();
-            this.setVisible(false);
-            this.dispose();
+            if (!jTable2.isEditing()) {
+                e.getTransaction().commit();
+                tablemarca.fireTableDataChanged();
+                this.refreshLists();
+                this.setVisible(false);
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Confirma cambios con ENTER", "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
         } else {
             if (decision == JOptionPane.NO_OPTION) {
                 e.getTransaction().rollback();
@@ -487,11 +552,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
         }
 
         if (decision == JOptionPane.YES_OPTION) {
-            e.getTransaction().commit();
-            tablemodelos.refreshRow(jTable3.getSelectedRow());
-            this.setVisible(false);
-            this.dispose();
-            this.refreshLists();
+            if (!jTable3.isEditing()) {
+                e.getTransaction().commit();
+                tablemodelos.refreshRow(jTable3.getSelectedRow());
+                this.setVisible(false);
+                this.dispose();
+                this.refreshLists();
+            } else {
+                JOptionPane.showMessageDialog(this, "Confirma cambios con ENTER", "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
         } else {
             if (decision == JOptionPane.NO_OPTION) {
                 if (e.getTransaction().isActive()) {
@@ -521,7 +592,7 @@ public class MostradorPiezas extends javax.swing.JDialog {
         comboBoxCellTPieza.setModel(new DefaultComboBoxModel(listatipPieza.getListaTipoPiezas().toArray()));
         comboBoxCellTPieza.setRenderer(new TiposListRenderer());
         tipoColumn.setCellEditor(new DefaultCellEditor(comboBoxCellTPieza));
-        
+
     }//GEN-LAST:event_ShowAllPiezaActionPerformed
 
     private void DeleteModeloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteModeloActionPerformed
@@ -560,11 +631,17 @@ public class MostradorPiezas extends javax.swing.JDialog {
         }
 
         if (decision == JOptionPane.YES_OPTION) {
-            e.getTransaction().commit();
-            tablemodel.refreshRow(jTable1.getSelectedRow());
-            this.setVisible(false);
-            this.dispose();
-            this.refreshLists();
+            if (!jTable3.isEditing()) {
+                e.getTransaction().commit();
+                tablemodel.refreshRow(jTable1.getSelectedRow());
+                this.setVisible(false);
+                this.dispose();
+                this.refreshLists();
+            } else {
+                JOptionPane.showMessageDialog(this, "Confirma cambios con ENTER", "Error",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+
         } else {
             if (decision == JOptionPane.NO_OPTION) {
                 if (e.getTransaction().isActive()) {
@@ -603,9 +680,51 @@ public class MostradorPiezas extends javax.swing.JDialog {
     }//GEN-LAST:event_DeletePiezaActionPerformed
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        areaDetailsPieza.setVisible(false);
+
+        areaDetailsPieza.setVisible(true);
         this.showDetails();
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void showPDFActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showPDFActionPerformed
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+        } catch (Exception e) {
+            System.out.println("Error Driver");
+        }
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/carparts", "root", null);
+        } catch (Exception e1) {
+            System.out.println("Error connection");
+        }
+
+        ResultSet rs = null;
+        Statement sentencia;
+        try {
+            sentencia = connection.createStatement();
+            rs = sentencia.executeQuery("SELECT * FROM Marca");
+            while (rs.next()) {
+                String marcasql = rs.getString("marca");
+                int id = rs.getInt("Id");
+                System.out.println(marcasql);
+                System.out.println(id);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarPartsWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            Map parameters = new HashMap();
+            JasperReport jasperReport
+                    = JasperCompileManager.compileReport(
+                            "Informe.jrxml");
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    jasperReport, parameters, new JRResultSetDataSource(rs));
+            JasperViewer.viewReport(jasperPrint, false);
+        } catch (JRException ex) {
+            ex.printStackTrace();
+        }
+
+    }//GEN-LAST:event_showPDFActionPerformed
 
     /**
      * @param args the command line arguments
@@ -669,5 +788,6 @@ public class MostradorPiezas extends javax.swing.JDialog {
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JButton showPDF;
     // End of variables declaration//GEN-END:variables
 }
